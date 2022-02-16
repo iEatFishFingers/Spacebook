@@ -13,36 +13,9 @@ class Login extends Component{
   
       Test = () => {
         alert(
-          "login successful now going to the homescreen "
+          "email is : " + this.state.email +
+          " password is: " + this.state.password
         );
-        console.log(response);
-        this.props.navigation.navigate('Home')
-      }
-
-      Login = () => {
-        console.log("login button pressed");
-        let loginInfo = {
-          email: this.state.email,
-          password: this.state.password
-        }
-
-        console.log(loginInfo);
-        return fetch("http://localhost:3333/api/1.0.0/login", {
-          method: 'post',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(loginInfo)
-        })
-        .then((response) => {
-          console.log(response);
-          this.state.email = '';
-          this.state.password = '';
-          this.Test();
-        })
-        .catch((error) => {
-          console.log(error)
-        })
       }
 
 
@@ -61,7 +34,7 @@ class Login extends Component{
                     placeholder='Password'
                     secureTextEntry={true}
                 />
-                <Button title="Real Login" onPress={() => this.Login()}/>
+                <Button title="Real Login" onPress={() => this.props.navigation.navigate('Home')}/>
                 <Button title="Test values" onPress={() => this.Test()}/>
                 <Button title="Dont have an account click here to sign up" onPress={() => this.props.navigation.navigate('SignUp')}/>
             </form>
