@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { View, Text, ActivityIndicator, FlatList, Button, TextInput, Alert } from 'react-native';
+import { View, Text, ActivityIndicator, FlatList, Button, TextInput, Alert,StyleSheet } from 'react-native';
 
 
 class SignUp extends Component{
@@ -49,35 +49,67 @@ class SignUp extends Component{
 
   render(){
     return(
-        <View>
+        <View style={mainStyle.container}>
             
-          <form>
-              <TextInput
-                    type="text"
-                    onChangeText={text => this.setState({Surname: text})}
-                    placeholder="Surname"
-              />
+            <View style={mainStyle.InputView}>
               <TextInput 
                     type="text"
                     onChangeText={text => this.setState({Firstname: text})}
                     placeholder="Firstname"
                 />
+            </View>
+
+            <View style={mainStyle.InputView}>
+              <TextInput
+                    type="text"
+                    onChangeText={text => this.setState({Surname: text})}
+                    placeholder="Surname"
+              />
+            </View>
+
+            <View style={mainStyle.InputView}>
               <TextInput
                     type="text"
                     onChangeText={text => this.setState({email: text})}
                     placeholder="Email"
                 />
+            </View>
+
+            <View style={mainStyle.InputView}>
                 <TextInput
                     onChangeText={text => this.setState({password: text})}
                     placeholder='Password'
                     secureTextEntry={true}
                 />
+            </View>
                 <Button title="Sign Up" onPress={() => {this.post()}}/>
-            </form>
+            
         </View>
     );
   }
 }
+
+const mainStyle = StyleSheet.create(
+    {
+      container: 
+      {
+        flex: 1,
+        backgroundColor: "#00000",
+        alignItems: "center",
+        justifyContent: "center",
+      },
+
+      InputView: {
+        backgroundColor: "#808080",
+        borderRadius: 30,
+        width: "70%",
+        height: 45,
+        marginBottom: 20,
+        alignItems: "center",
+  
+      },
+    }
+)
 
 
 export default SignUp;
