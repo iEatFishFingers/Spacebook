@@ -1,65 +1,36 @@
 import React, { Component } from 'react';
+import { Text, View, FlatList} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View } from 'react-native-web';
+import Posts from '../SocialParts/Posts';
+import { Container, Content} from 'native-base';
 
 
 
 
-const Stack = createBottomTabNavigator();
-
-class HomeScreen extends Component{
-
-componentDidMount()
+class HomeScreen extends Component
 {
-  this.getData();
-  this.checkLoggedIn();
-}
-
-  getData = async () => 
+  constructor(props)
   {
-    const value = await AsyncStorage.getItem('@token');
-    return fetch("http://localhost:3333/api/1.0.0/search", 
-      {
-        'headers': {
-          'X-Authorization':  value
-        }
-      })
-
-      .then((response) => {
-        if(response.status === 200){
-          console.log(value);
-            return response.json()
-        }else if(response.status === 401){
-          this.props.navigation.navigate("Login");
-        }else{
-            throw 'Something went wrong';
-        }
-    })
-    .then((responseJson) => {
-      this.setState({
-        isLoading: false,
-        listData: responseJson
-      })
-    })
-    .catch((error) => {
-        console.log(error);
-    })
-
-  }
-    
-  checkLoggedIn = async () => {
-    const value = await AsyncStorage.getItem('@token');
-    if (value == null) {
-        this.props.navigation.navigate('Login');
+    super(props);
+    this.state = {
+      loadingPrompt: true,
+      info: []
     }
-  };
+  }
 
   render(){
-    return(
-      <View></View>
-    );
+      return(
+        <View> 
+          <FlatList
+          />
+        </View>
+      );
   }
 }
+
+
+
+
+
 
 export default HomeScreen;

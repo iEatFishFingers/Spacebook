@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-web';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
@@ -23,5 +23,7 @@ class bottomTab extends Component{
     );
   }
 }
+
+
 
 export default bottomTab;

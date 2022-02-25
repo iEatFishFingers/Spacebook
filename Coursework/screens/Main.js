@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import Stackv2 from './bottomTab';
-import EditProfile from './EditProfile';
 
 
 
@@ -17,5 +16,10 @@ class Main extends Component{
     );
   }
 }
+
+
+
+
+
 
 export default Main;

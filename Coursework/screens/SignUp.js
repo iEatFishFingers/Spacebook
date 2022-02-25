@@ -25,7 +25,7 @@ class SignUp extends Component{
         }
 
         console.log(sendLoginInfo);
-        return fetch('http://localhost:3333/user', {
+        return fetch("http://localhost:3333/api/1.0.0/user", {
             method: 'post',
             headers: {
                 'Content-Type': 'application/json'
@@ -33,11 +33,24 @@ class SignUp extends Component{
             body: JSON.stringify(sendLoginInfo)
         })
         .then((response) => {
-            Alert.alert("successfully signed up stylll");
-            this.state.Firstname="";
-            this.state.Surname="";
-            this.state.email="";
-            this.state.password="";
+            if(response.status === 201)
+            {
+                Alert.alert("successfully signed up stylll");
+                this.state.Firstname="";
+                this.state.Surname="";
+                this.state.email="";
+                this.state.password="";
+                this.props.navigation.navigate('Login');
+            }
+            else if(response.status === 400)
+            {
+                throw 'Unable to sign up perhaps email already in use';
+            }
+            else
+            {
+                throw 'Something went wrong';
+            }
+            
         })
         .catch((error) =>
         {

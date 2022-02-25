@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import {Text, View, StyleSheet, Pressable } from 'react-native';
 import {Avatar, Caption, Divider, Title} from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Friends from './MeetFriends';
 
 
 
@@ -11,10 +13,89 @@ class Profile extends Component{
   {
     super();
     this.state = {
+      firstname: '',
+      lastname: '',
+      email: '',
       Friends: 0,
       FriendReq: 0,
     }
   }
+
+componentDidMount()
+{
+  this.getInfo();
+  this.getProfilePic();
+  }
+
+
+getInfo = async () => {
+  const auth = await AsyncStorage.getItem('@token');
+  const user_id = await AsyncStorage.getItem('@id');
+  return fetch("http://localhost:3333/api/1.0.0/user/"+user_id, {
+    headers: {
+      'X-Authorization':  auth
+    }
+  })
+  .then( (response) => {
+    if(response.status === 200){
+      console.log(response);
+      return response.json()
+    }
+    else if(response.status === 401){
+      console.log("user not found")
+    }
+    else{
+      throw 'Something went wrong'
+    }
+  })
+  .then( (responseJson) => {
+    console.log("omg it got this far maud");
+    this.setState({
+      firstname: responseJson.first_name,
+      lastname: responseJson.last_name,
+      email: responseJson.email,
+      Friends: responseJson.friend_count
+    })
+    console.log(this.state);
+    console.log(responseJson);
+  })
+  .catch((error) => {
+    console.log(error);
+})
+}
+
+getProfilePic = async () =>{
+  const auth = await AsyncStorage.getItem('@token');
+  const user_id = await AsyncStorage.getItem('@id');
+  return fetch("http://localhost:3333/api/1.0.0/user/"+user_id+"/photo", {
+    method: 'get',
+    headers: {
+      'X-Authorization':  auth
+    }
+  })
+  .then( (response) => {
+    if(response.status === 200)
+    {
+      return response.json()
+    }
+    else if(response.status === 400)
+    {
+
+      throw 'Invalid email or password';
+    }
+    else
+    {
+      throw 'Something went wrong';
+    }
+  })
+  .catch( (error) => {
+    console.log(error);
+  })
+}
+  
+
+
+
 
 
   render(){
@@ -27,9 +108,9 @@ class Profile extends Component{
                 <Avatar.Image/>
 
                 <View style={{marginLeft: 20}} >
-                  <Title style={ProfileStyle.name}>Man lyke </Title>
+                  <Title style={ProfileStyle.name}>{this.state.firstname} {this.state.lastname} </Title>
 
-                  <Caption>@ManLykeBobyuhNuh</Caption>
+                  <Caption>{this.state.email}</Caption>
 
                 </View>
 
@@ -38,14 +119,18 @@ class Profile extends Component{
 
               <View style={ProfileStyle.ProfileBtns}>
                 
-                <Pressable style={ProfileStyle.Button}>
-                      <Text style={ProfileStyle.btnTxt}>Friends: XX</Text>
+                <Pressable style={ProfileStyle.Button} onPress={() => this.props.navigation.navigate('Friends')}>
+                      <Text style={ProfileStyle.btnTxt}>Friends: {this.state.Friends}</Text>
                 </Pressable>
 
                 <Divider orientation="vertical" />
 
                 <Pressable style={ProfileStyle.Button}>
                       <Text style={ProfileStyle.btnTxt}>Requests: XX</Text>
+                </Pressable>
+
+                <Pressable style={ProfileStyle.Button}>
+                  <Text style={ProfileStyle.btnTxt}> Edit Profile </Text>
                 </Pressable>
 
               </View>
@@ -68,6 +153,8 @@ const ProfileStyle = StyleSheet.create(
     {
       flex:1,
     },
+
+
     Divider:
     {
       marginTop:10,

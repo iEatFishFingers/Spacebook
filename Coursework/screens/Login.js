@@ -8,15 +8,13 @@ class Login extends Component{
         super(props);
         this.state = {
             email: '',
-            password: ''
+            password: '',
+            keyath: ''
         }
 
     }
   
       Test = () => {
-        alert(
-          "login successful now going to the homescreen "
-        );
         console.log('going to homw now ');
         this.props.navigation.navigate('Home')
       }
@@ -36,35 +34,31 @@ class Login extends Component{
           },
           body: JSON.stringify(loginInfo)
         })
-        .then(async (response) => 
+        .then((response) => 
         {
-          if(response.status === 200)
-          {
-            console.log(response);
-            await AsyncStorage.setItem("@token", response.token);
-            console.log('login successfull');
-            console.log( response.token);
-            this.Test();
-            this.state.email = '';
-            this.state.password = '';
-          }
-          else if(response.status === 400)
-          {
-            throw 'Invalid email or password';
-          }
-          else
-          {
-            throw 'Something went wrong check server';
+          if(response.status === 200){
+              return response.json()
+          }else if(response.status === 400){
+              throw 'Invalid email or password';
+          }else{
+              throw 'Something went wrong';
           }
         })
-        .catch((error) =>
+        .then(async (responseJson) => 
         {
-            console.log(error)
+              await AsyncStorage.setItem('@token', responseJson.token);
+              console.log(responseJson.token);
+              await AsyncStorage.setItem('@id', responseJson.id);
+              console.log(responseJson.id);
+              this.props.navigation.navigate("Home");
+        })
+        .catch((error) => {
+          console.log(error);
         })
       
       }
 
-token
+
 
   render(){
     return(
