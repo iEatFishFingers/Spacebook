@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { View, Text, ActivityIndicator, FlatList, Button, TextInput, Alert,StyleSheet } from 'react-native';
+import { View, Text,  Button, TextInput, Alert, StyleSheet, Pressable } from 'react-native';
 
 
 class SignUp extends Component{
@@ -26,7 +26,7 @@ class SignUp extends Component{
 
         console.log(sendLoginInfo);
         return fetch("http://localhost:3333/api/1.0.0/user", {
-            method: 'post',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -35,7 +35,7 @@ class SignUp extends Component{
         .then((response) => {
             if(response.status === 201)
             {
-                Alert.alert("successfully signed up stylll");
+                alert("Sign up successful returning to login page");
                 this.state.Firstname="";
                 this.state.Surname="";
                 this.state.email="";
@@ -65,7 +65,8 @@ class SignUp extends Component{
         <View style={mainStyle.container}>
             
             <View style={mainStyle.InputView}>
-              <TextInput 
+              <TextInput
+                    style={mainStyle.Input} 
                     type="text"
                     onChangeText={text => this.setState({Firstname: text})}
                     placeholder="Firstname"
@@ -74,6 +75,7 @@ class SignUp extends Component{
 
             <View style={mainStyle.InputView}>
               <TextInput
+                    style={mainStyle.Input}
                     type="text"
                     onChangeText={text => this.setState({Surname: text})}
                     placeholder="Surname"
@@ -82,6 +84,7 @@ class SignUp extends Component{
 
             <View style={mainStyle.InputView}>
               <TextInput
+                    style={mainStyle.Input}
                     type="text"
                     onChangeText={text => this.setState({email: text})}
                     placeholder="Email"
@@ -90,12 +93,15 @@ class SignUp extends Component{
 
             <View style={mainStyle.InputView}>
                 <TextInput
+                    style={mainStyle.Input}
                     onChangeText={text => this.setState({password: text})}
                     placeholder='Password'
                     secureTextEntry={true}
                 />
             </View>
-                <Button title="Sign Up" onPress={() => {this.post()}}/>
+            <Pressable style={mainStyle.Button} onPress={() => {this.post()}}>
+                    <Text style={mainStyle.ButtonText}>Sign Up</Text>
+            </Pressable>
             
         </View>
     );
@@ -113,14 +119,37 @@ const mainStyle = StyleSheet.create(
       },
 
       InputView: {
-        backgroundColor: "#808080",
+        backgroundColor: "#87ceeb",
         borderRadius: 30,
         width: "70%",
         height: 45,
         marginBottom: 20,
-        alignItems: "center",
   
       },
+
+      Input: {
+        flex: 1,
+        marginLeft:20,
+        color: 'white',
+        fontWeight: 'bold',
+      },
+
+      Button: {
+      borderRadius: 30,
+      height: 30,
+      marginBottom: 10,
+      width: 130,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: 'blue',
+        },
+    
+        ButtonText:
+        {
+           color: 'white',
+           fontWeight: 'bold',
+        },
+
     }
 )
 

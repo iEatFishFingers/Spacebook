@@ -9,7 +9,7 @@ import Friends from './MeetFriends';
 
 
 class Profile extends Component{
-  constructor(props)
+constructor(props)
   {
     super();
     this.state = {
@@ -18,6 +18,7 @@ class Profile extends Component{
       email: '',
       Friends: 0,
       FriendReq: 0,
+      req: []
     }
   }
 
@@ -25,6 +26,7 @@ componentDidMount()
 {
   this.getInfo();
   this.getProfilePic();
+  this.getReq();
   }
 
 
@@ -32,6 +34,7 @@ getInfo = async () => {
   const auth = await AsyncStorage.getItem('@token');
   const user_id = await AsyncStorage.getItem('@id');
   return fetch("http://localhost:3333/api/1.0.0/user/"+user_id, {
+    method: 'GET',
     headers: {
       'X-Authorization':  auth
     }
@@ -68,7 +71,7 @@ getProfilePic = async () =>{
   const auth = await AsyncStorage.getItem('@token');
   const user_id = await AsyncStorage.getItem('@id');
   return fetch("http://localhost:3333/api/1.0.0/user/"+user_id+"/photo", {
-    method: 'get',
+    method: 'GET',
     headers: {
       'X-Authorization':  auth
     }
@@ -93,12 +96,48 @@ getProfilePic = async () =>{
   })
 }
   
+getReq = async () => {
+  const auth = await AsyncStorage.getItem('@token');
+  const id = await AsyncStorage.getItem('@id');
+  
+  return fetch("http://localhost:3333/api/1.0.0/friendrequests", {
+    method: 'GET',
+    headers: {
+      'X-Authorization':  auth
+    }
+  })
+
+  .then( (response) => {
+    if(response.status === 200){
+      console.log(response);
+      return response.json()
+    }
+    else if(response.status === 401){
+      console.log("user not found")
+    }
+    else{
+      throw 'Something went wrong'
+    }
+  })
+
+  .then(async (responseJson) =>
+  {
+    console.log(responseJson);
+    this.setState({
+      req: responseJson
+    })
+    this.state.FriendReq = (this.state.req).length;
+  })
+
+  .catch((error) => {
+    console.log(error);
+  })
+
+  
+}
 
 
-
-
-
-  render(){
+render(){
     return(
       
         <SafeAreaView style={ProfileStyle.container}>
@@ -126,7 +165,7 @@ getProfilePic = async () =>{
                 <Divider orientation="vertical" />
 
                 <Pressable style={ProfileStyle.Button}>
-                      <Text style={ProfileStyle.btnTxt}>Requests: XX</Text>
+                      <Text style={ProfileStyle.btnTxt}>Requests: {this.state.FriendReq}</Text>
                 </Pressable>
 
                 <Pressable style={ProfileStyle.Button}>
