@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { View, Text,  Button, TextInput, Alert, StyleSheet, Pressable } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Pressable } from 'react-native';
 
 
 class SignUp extends Component{
@@ -15,6 +15,9 @@ class SignUp extends Component{
         }
 
     }
+
+
+
     post =() => {
         console.log("working");
         let sendLoginInfo = {

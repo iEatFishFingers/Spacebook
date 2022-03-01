@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Text, View, StyleSheet, Pressable } from 'react-native';
+import {Text, View, StyleSheet, Pressable, FlatList, Button } from 'react-native';
 import {Avatar, Caption, Divider, Title} from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -18,7 +18,8 @@ constructor(props)
       email: '',
       Friends: 0,
       FriendReq: 0,
-      req: []
+      req: [],
+      post: []
     }
   }
 
@@ -27,7 +28,8 @@ componentDidMount()
   this.getInfo();
   this.getProfilePic();
   this.getReq();
-  }
+  this.getPosts();
+}
 
 
 getInfo = async () => {
@@ -136,6 +138,42 @@ getReq = async () => {
   
 }
 
+getPosts = async () => {
+  const auth = await AsyncStorage.getItem('@token');
+  const id = await AsyncStorage.getItem('@id');
+
+  return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/post", 
+  {
+    method: 'GET',
+    headers: {
+      'X-Authorization':  auth,
+    }
+  })
+  .then( (response) => 
+    {
+      console.log(response);
+      if(response.status === 200){
+        return response.json();
+      }
+      else if(response.status === 400){
+        alert('Bad request');
+      }
+      else
+      {
+        alert('something went wrong');
+      }
+  })
+  .then( (responseJson) => {
+      console.log(responseJson);
+      this.setState({
+        Posts: responseJson
+    })
+  })
+  .catch((error) => {
+      console.log(error)
+  })
+   
+}
 
 render(){
     return(
@@ -176,6 +214,36 @@ render(){
 
               <Divider style={ProfileStyle.Divider} />
 
+              <View>
+
+              <FlatList
+                data = {this.state.Posts}
+                renderItem = {({item}) => 
+          
+                (
+                  <View>
+                    <View style={{flexDirection: 'row'}}>
+                      <Avatar.Image/>
+                      <View>
+                        <Title style={ProfileStyle.postname}>{item.author.first_name} {item.author.last_name}</Title>
+                        <Caption style={ProfileStyle.time}>{item.timestamp}</Caption>
+                      </View>
+                    </View>
+                    
+                    <Text style={ProfileStyle.Posttxt}>{item.text}</Text>
+                    <Text>Likes: {item.numLikes}</Text>
+                    <Pressable style={ProfileStyle.likebtn} onPress={() => this.likePost(item.user_id,post_id)}>
+                      <Text style={ProfileStyle.btnPostTxt}>Like</Text>
+                    </Pressable>
+                    <Divider style={ProfileStyle.Divider}/>
+                    
+            </View>
+          )}
+
+          keyExtractor={(item,index) => item.post_id}
+          />
+              </View>
+
             </View>
         </SafeAreaView>
 
@@ -193,6 +261,42 @@ const ProfileStyle = StyleSheet.create(
       flex:1,
     },
 
+    btnPostTxt:
+    {
+      color: 'white',
+      fontWeight:'bold'
+    },
+
+    likebtn:
+    {
+      borderRadius: 30,
+      height: 30,
+      marginTop: 10,
+      width: 100,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#87ceeb',
+    },
+    
+
+    Posttxt:
+    {
+      fontSize: 15,
+      fontWeight: "bold",
+    },
+
+    postname:
+    {
+      marginLeft: 10,
+      marginTop:10,
+      fontSize: 15,
+    },
+
+    time:
+    {
+      marginBottom: 10,
+      marginLeft: 10,
+    },
 
     Divider:
     {

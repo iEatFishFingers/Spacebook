@@ -15,12 +15,16 @@ class Friends extends Component{
   constructor(props){
     super(props);
     this.state={
-      data: []
+      SuggestedFriends: [],
+      Friendrequests: [],
+      FriendsList: []
     }
   }
 
   componentDidMount(){
+    this.getFriends();
     this.getListOfUsers();
+    this.getFriendReq();
   }
 
 
@@ -39,7 +43,6 @@ class Friends extends Component{
     {
       console.log(response);
       if(response.status === 200){
-        alert('successfull');
         return response.json();
       }
       else if(response.status === 400){
@@ -53,9 +56,8 @@ class Friends extends Component{
     .then( (responseJson) => {
       console.log(responseJson);
       this.setState({
-        data: responseJson
+        SuggestedFriends: responseJson
       })
-      console.log(this.state.data);
     })
     .catch((error) => {
       console.log(error)
@@ -65,20 +67,22 @@ class Friends extends Component{
   SendReq = async (id) => {
     const auth = await AsyncStorage.getItem('@token');
     console.log(id);
-    return fetch("http://localhost:3333/api/1.0.0/friendrequests/"+id, {
+    return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/friends", {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
         'X-Authorization':  auth,
       }
       })
       .then( (response) => 
       {
-        if(response.status === 200){
+        if(response.status === 201){
           alert('successfull');
         }
         else if(response.status === 400){
           alert('Bad request');
+        }
+        else if(response.status === 403){
+          alert('Request has already been sent')
         }
         else
         {
@@ -90,34 +94,204 @@ class Friends extends Component{
       });
     }
 
+  getFriends = async () => 
+  {
+    const auth = await AsyncStorage.getItem('@token');
+    const id = await AsyncStorage.getItem('@id');
 
+    return fetch('"http://localhost:3333/api/1.0.0/user/'+id+'/friends', {
+      method: 'GET',
+      headers: {
+        'X-Authorization':  auth,
+      }
+    })
+    .then( (response) => 
+    {
+      console.log(response);
+      if(response.status === 200){
+        return response.json();
+      }
+      else if(response.status === 400){
+        alert('Bad request');
+      }
+      else
+      {
+        alert('something went wrong');
+      }
+    })
+    .then( (responseJson) => {
+      console.log(responseJson);
+      this.setState({
+        FriendsList: responseJson
+      })
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+  }
 
+  getFriendReq = async () => {
+    const  auth = await AsyncStorage.getItem('@token');
 
+    return fetch("http://localhost:3333/api/1.0.0/friendrequests", 
+  {
+    method: 'GET',
+    headers: {
+      'X-Authorization':  auth,
+    }
+  })
+  .then( (response) => 
+    {
+      console.log(response);
+      if(response.status === 200){
+        return response.json();
+      }
+      else if(response.status === 400){
+        alert('Bad request');
+      }
+      else
+      {
+        alert('something went wrong');
+      }
+  })
+  .then( (responseJson) => {
+      console.log(responseJson);
+      this.setState({
+        Friendrequests: responseJson
+    })
+  })
+  .catch((error) => {
+      console.log(error)
+  })
+  }
 
+  AccReq = async (id) => {
+    const auth = await AsyncStorage.getItem('@token');
+    return fetch("http://localhost:3333/api/1.0.0/friendrequests/"+id, 
+    {
+      method: 'POST',
+      headers: {
+        'X-Authorization':  auth,
+      }
+    })
+    .then( (response) => 
+    {
+      console.log(response);
+      if(response.status === 200){
+        this.getFriendReq();
+        return response.json();
+      }
+      else if(response.status === 400){
+        alert('Bad request');
+      }
+      else
+      {
+        alert('something went wrong');
+      }
+    })
+    .catch((error) => {
+      console.log(error)
+    })
 
+    
+  }
+
+  DecReq = async (id) => {
+    const auth = await AsyncStorage.getItem('@token');
+    return fetch("http://localhost:3333/api/1.0.0/friendrequests/"+id, 
+    {
+      method: 'DELETE',
+      headers: {
+        'X-Authorization':  auth,
+      }
+    })
+    .then( (response) => 
+    {
+      console.log(response);
+      if(response.status === 200){
+        this.getFriendReq();
+        return response.json();
+      }
+      else if(response.status === 400){
+        alert('Bad request');
+      }
+      else
+      {
+        alert('something went wrong');
+      }
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+  }
 
   render(){
     return(
       <View>
         <View>
-          <Text> People you may know ....</Text>
-          <FlatList
-          data = {this.state.data}
-          renderItem = {({item}) => 
-          
-          (
-            <View>
-              <Text>{item.user_givenname} {item.user_familyname}</Text>
-              <Caption>{item.user_email}</Caption>
-              <Button
-                title='Send Friend Request'
-                onPress={() => this.SendReq(item.user_id)}
-              />
-            </View>
-          )}
 
-          keyExtractor={(item,index) => item.user_id}
-          />
+          <View>
+            <Text> Friends </Text>
+            <FlatList
+            data = {this.state.FriendsList}
+            renderItem = {({item}) => 
+            
+            (
+              <View>
+                <Text>{item.first_name} {item.last_name}</Text>
+                <Caption>{item.email}</Caption>
+              </View>
+            )}
+
+            keyExtractor={(item,index) => item.user_id}
+            />
+          </View>
+
+          <View>
+            <Text> Friend Requests </Text>
+            <FlatList
+            data = {this.state.Friendrequests}
+            renderItem = {({item}) => 
+            (
+              <View>
+                <Text>{item.first_name} {item.last_name}</Text>
+                <Caption>{item.email}</Caption>
+                <Button
+                  title="Accept"
+                  onPress={() => this.AccReq(item.user_id)}
+                />
+                <Button
+                  title="Decline"
+                  onPress={() => this.DecReq(item.user_id)}
+                />
+              </View>
+            )}
+
+            keyExtractor={(item,index) => item.user_id}
+            />
+          </View>
+
+          <View>
+            <Text> People you may know ....</Text>
+            <FlatList
+            data = {this.state.SuggestedFriends}
+            renderItem = {({item}) => 
+            
+            (
+              <View>
+                <Text>{item.user_givenname} {item.user_familyname}</Text>
+                <Caption>{item.user_email}</Caption>
+                <Button
+                  title='Send Friend Request'
+                  onPress={() => this.SendReq(item.user_id)}
+                />
+              </View>
+            )}
+
+            keyExtractor={(item,index) => item.user_id}
+            />
+          </View>
+
         </View>
       </View>
     );
