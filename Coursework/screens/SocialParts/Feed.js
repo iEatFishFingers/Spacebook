@@ -19,6 +19,8 @@ class HomeScreen extends Component
       loadingPrompt: true,
       Posts: [],
       newpost: '',
+      friends: [],
+      fId: [],
     }
   }
 
@@ -59,6 +61,7 @@ class HomeScreen extends Component
         this.setState({
           Posts: responseJson
       })
+      this.getFriends();
     })
     .catch((error) => {
         console.log(error)
@@ -66,12 +69,97 @@ class HomeScreen extends Component
      
   }
 
+  getFriends = async () => 
+  {
+    const auth = await AsyncStorage.getItem('@token');
+    const id = await AsyncStorage.getItem('@id');
 
-  //create a function that gets all of the users friends id in an array
-  //and store in constructor (global var)
+    return fetch('http://localhost:3333/api/1.0.0/user/'+id+'/friends', {
+      method: 'GET',
+      headers: {
+        'X-Authorization':  auth,
+      }
+    })
+    .then( (response) => 
+    {
+      console.log(response);
+      if(response.status === 200){
+        return response.json();
+      }
+      else if(response.status === 400){
+        alert('Bad request');
+      }
+      else
+      {
+        alert('something went wrong');
+      }
+    })
+    .then( (responseJson) => {
+      console.log(responseJson.user_id)
+      this.setState({
+        friends: responseJson
+      })
+      this.initFriendID();
+      console.log(this.state.friends.user_id)
+      console.log(this.state.friends)
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+  }
 
-  //using the array loop through each user and get the post and push the values 
-  //into the post constructor value
+  initFriendID =  () => {
+    let temp = this.state.friends
+    console.log(temp);
+    for(let i = 0; i < temp.length; i++){
+      this.state.fId.push((temp[i].user_id));
+    }
+    console.log(this.state.fId);
+    this.getFriendPost();
+  }
+
+  getFriendPost = async () => {
+    const auth = await AsyncStorage.getItem('@token');
+    
+    for(let i = 0; i<=this.state.fId.length; i++)
+    {
+      return fetch("http://localhost:3333/api/1.0.0/user/"+this.state.fId[i]+"/post", 
+    {
+      method: 'GET',
+      headers: {
+        'X-Authorization':  auth,
+      }
+    })
+    .then( (response) => 
+      {
+        console.log(response);
+        if(response.status === 200){
+          return response.json();
+        }
+        else if(response.status === 400){
+          alert('Bad request');
+        }
+        else
+        {
+          alert('something went wrong');
+        }
+    })
+    .then( (responseJson) => {
+        console.log(responseJson);
+        let temp = responseJson;
+        for(i = 0; i< temp.length; i++)
+        {
+          this.state.Posts.push(temp[i]);
+        }
+        console.log(this.state.Posts)
+    })
+    .catch((error) => {
+        console.log(error)
+    })
+    }
+    
+     
+  }
 
   Post = async () => 
   {

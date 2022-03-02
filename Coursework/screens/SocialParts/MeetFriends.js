@@ -99,7 +99,7 @@ class Friends extends Component{
     const auth = await AsyncStorage.getItem('@token');
     const id = await AsyncStorage.getItem('@id');
 
-    return fetch('"http://localhost:3333/api/1.0.0/user/'+id+'/friends', {
+    return fetch('http://localhost:3333/api/1.0.0/user/'+id+'/friends', {
       method: 'GET',
       headers: {
         'X-Authorization':  auth,
@@ -111,8 +111,8 @@ class Friends extends Component{
       if(response.status === 200){
         return response.json();
       }
-      else if(response.status === 400){
-        alert('Bad request');
+      else if(response.status === 404){
+        throw 'got no friends'
       }
       else
       {
@@ -238,7 +238,7 @@ class Friends extends Component{
             
             (
               <View>
-                <Text>{item.first_name} {item.last_name}</Text>
+                <Text>{item.user_givenname} {item.user_familyname}</Text>
                 <Caption>{item.email}</Caption>
               </View>
             )}
