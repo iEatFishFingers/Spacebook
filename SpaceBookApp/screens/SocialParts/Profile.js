@@ -19,7 +19,8 @@ constructor(props)
       Friends: 0,
       FriendReq: 0,
       req: [],
-      post: []
+      post: [],
+      photo: null
     }
   }
 
@@ -81,7 +82,7 @@ getProfilePic = async () =>{
   .then( (response) => {
     if(response.status === 200)
     {
-      return response.json()
+      return response.blob()
     }
     else if(response.status === 400)
     {
@@ -92,6 +93,13 @@ getProfilePic = async () =>{
     {
       throw 'Something went wrong';
     }
+  })
+  .then((responseBlob) => {
+    console.log("working");
+    let data = URL.createObjectURL(responseBlob);
+    this.setState({
+      photo: data,
+    });
   })
   .catch( (error) => {
     console.log(error);
@@ -182,7 +190,7 @@ render(){
             <View style={ProfileStyle.ProfileInfo}>
               <View style={{flexDirection: 'row', marginTop: 15}}>
 
-                <Avatar.Image/>
+              <Avatar.Image size={64} source={this.state.photo} />
 
                 <View style={{marginLeft: 20}} >
                   <Title style={ProfileStyle.name}>{this.state.firstname} {this.state.lastname} </Title>
@@ -223,7 +231,7 @@ render(){
                 (
                   <View>
                     <View style={{flexDirection: 'row'}}>
-                      <Avatar.Image/>
+                    <Avatar.Image size={64} source={this.state.photo} />
                       <View>
                         <Title style={ProfileStyle.postname}>{item.author.first_name} {item.author.last_name}</Title>
                         <Caption style={ProfileStyle.time}>{item.timestamp}</Caption>

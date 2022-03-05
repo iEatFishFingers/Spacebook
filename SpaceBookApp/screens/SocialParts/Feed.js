@@ -139,6 +139,9 @@ class HomeScreen extends Component
         else if(response.status === 400){
           alert('Bad request');
         }
+        else if(response.status === 404){
+          console.log("no friends")
+        }
         else
         {
           alert('something went wrong');
