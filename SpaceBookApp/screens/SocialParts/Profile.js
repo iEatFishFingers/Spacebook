@@ -33,6 +33,35 @@ componentDidMount()
 }
 
 
+DeletePost = async (postid) =>{
+  const auth = await AsyncStorage.getItem('@token');
+  const userid = await AsyncStorage.getItem('@id');
+  return fetch("http://localhost:3333/api/1.0.0/user/"+userid+"/post/"+postid, {
+    method: 'DELETE',
+    headers: {
+      'X-Authorization':  auth
+    }
+  })
+  .then( (response) => {
+    if(response.status === 200){
+      console.log(response);
+      console.log("post deleted");
+      this.getPosts();
+      return response.json()
+    }
+    else if(response.status === 401){
+      console.log("user not found")
+    }
+    else{
+      throw 'Something went wrong'
+    }
+  })
+  .catch((error) => {
+    console.log(error)
+  })
+
+}
+
 getInfo = async () => {
   const auth = await AsyncStorage.getItem('@token');
   const user_id = await AsyncStorage.getItem('@id');
@@ -81,6 +110,10 @@ getProfilePic = async () =>{
   })
   .then( (response) => {
     if(response.status === 200)
+    {
+      return response.blob()
+    }
+    else if(response.status === 304)
     {
       return response.blob()
     }
@@ -240,8 +273,16 @@ render(){
                     
                     <Text style={ProfileStyle.Posttxt}>{item.text}</Text>
                     <Text>Likes: {item.numLikes}</Text>
-                    <Pressable style={ProfileStyle.likebtn} onPress={() => this.likePost(item.user_id,post_id)}>
+                    <Pressable style={ProfileStyle.likebtn} onPress={() => this.likePost(item.user_id,item.post_id)}>
                       <Text style={ProfileStyle.btnPostTxt}>Like</Text>
+                    </Pressable>
+
+                    <Pressable style={ProfileStyle.likebtn} onPress={() => this.DeletePost(item.post_id)}>
+                      <Text style={ProfileStyle.btnPostTxt}>Delete</Text>
+                    </Pressable>
+
+                    <Pressable style={ProfileStyle.likebtn} onPress={() => this.EditPost(item.user_id,item.post_id)}>
+                      <Text style={ProfileStyle.btnPostTxt}>Edit</Text>
                     </Pressable>
                     <Divider style={ProfileStyle.Divider}/>
                     

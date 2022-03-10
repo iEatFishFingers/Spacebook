@@ -202,6 +202,42 @@ class HomeScreen extends Component
     })
   }
 
+  removePost = async (postid) =>
+  {
+    const auth = await AsyncStorage.getItem('@token');
+    const id = await AsyncStorage.getItem('@id');
+
+    return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/post/"+postid+"/like", {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Authorization' : auth,
+      }
+    })
+    .then( (response) => 
+    {
+      console.log(response);
+      if(response.status === 200){
+        this.getPosts();
+        return response.json();
+      }
+      else if(response.status === 401){
+        alert('Bad request');
+      }
+      else if(response.status === 403){
+        console.log("you have not liked this post")
+      }
+      else
+      {
+        alert('something went wrong');
+      }
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+
+  }
+
   likePost = async (postid) => 
   {
     const auth = await AsyncStorage.getItem('@token');
@@ -223,6 +259,9 @@ class HomeScreen extends Component
       }
       else if(response.status === 400){
         alert('Bad request');
+      }
+      else if(response.status === 403){
+        this.removePost(postid);
       }
       else
       {
