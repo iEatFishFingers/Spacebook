@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import { Text, View, FlatList, TextInput, Button, ScrollView} from 'react-native';
-import { Title, Caption } from 'react-native-paper';
+import { Text, View, FlatList, TextInput, Button, ScrollView, StyleSheet} from 'react-native';
+import { Title, Caption, Divider } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Posts from '../SocialParts/Posts';
 
-import TouchHistoryMath from 'react-native/Libraries/Interaction/TouchHistoryMath';
 
 
 
@@ -21,6 +19,8 @@ class HomeScreen extends Component
       newpost: '',
       friends: [],
       fId: [],
+      buttonstat: 'like post',
+      buttoncolor: 'blue'
     }
   }
 
@@ -238,10 +238,10 @@ class HomeScreen extends Component
 
   }
 
-  likePost = async (postid) => 
+  likePost = async (postid,id) => 
   {
     const auth = await AsyncStorage.getItem('@token');
-    const id = await AsyncStorage.getItem('@id');
+    
 
     return fetch("http://localhost:3333/api/1.0.0/user/"+id+"/post/"+postid+"/like", {
       method: 'POST',
@@ -255,13 +255,14 @@ class HomeScreen extends Component
       console.log(response);
       if(response.status === 200){
         this.getPosts();
+        this.state.buttoncolor="grey";
         return response.json();
       }
       else if(response.status === 400){
-        alert('Bad request');
+        this.removePost();
       }
       else if(response.status === 403){
-        this.removePost(postid);
+        this.removePost();
       }
       else
       {
@@ -277,27 +278,32 @@ class HomeScreen extends Component
 
   render(){
       return(
-        <View> 
-          <View>
+        <View style={FeedStyle.container}> 
+          <View style={FeedStyle.postSection}>
             <TextInput
+              multiline
+              numberOfLines={5}
               type='text'
               onChangeText={text => this.setState({newpost: text})}
               placeholder='Update your status...'
             />
             <Button
-              title="Post"
+              title='Upload Post'
+              style={this.state.buttoncolor}
               onPress={() => this.Post()}
             />
                 
             
 
           </View>
-          <ScrollView>
+          
+          <ScrollView >
           <FlatList scrollEnabled
+          style={FeedStyle.FriendSection}
             data = {this.state.Posts}
             renderItem = {({item}) => 
               (
-                <View>
+                <View style={FeedStyle.postCard}>
                   <Title>{item.author.first_name} {item.author.last_name}</Title>
                   <Caption>{item.timestamp}</Caption>
                   <Text>{item.text}</Text>
@@ -305,20 +311,53 @@ class HomeScreen extends Component
                   <Button
                     title="like post"
                     onChangeText={text => this.setState({newpost: text})}
-                    onPress={() => this.likePost(item.post_id)}
+                    onPress={() => this.likePost(item.post_id,item.author.user_id)}
                   />
+                  <Divider/>
                 </View>
               )}
             keyExtractor={(item,index) => item.post_id}
           />
           </ScrollView>
-                    
+                   
         </View>
       );
   }
 }
 
+const FeedStyle = StyleSheet.create(
+  {
+    container:
+    {
+      flex : 1,
+      backgroundColor: '#d3d3d3'
+    },
 
+    postSection:
+    {
+      backgroundColor: "white",
+      marginBottom: 10,
+      borderRadius: 5,
+    },
+
+    FriendSection:
+    {
+      margin:5,
+      backgroundColor: 'Light gray',
+      
+    },
+
+    postCard:
+    {
+      margin:15,
+      borderRadius:20,
+      backgroundColor:'white',
+    }
+
+
+
+  }
+)
 
 
 

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, ActivityIndicator, FlatList, Button, TextInput, Alert } from 'react-native';
+import { View, Text, ActivityIndicator, FlatList, Button, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import Stackv2 from '../bottomTab';
@@ -227,28 +227,39 @@ class Friends extends Component{
 
   render(){
     return(
-      <View>
         <View>
 
-          <View>
-            <Text> Friends </Text>
+          <View style={FriendStyl.FriendSec}>
+            <Text style={FriendStyl.FriendTitle}> --- Friends --- </Text>
             <FlatList
             data = {this.state.FriendsList}
             renderItem = {({item}) => 
             
             (
-              <View>
-                <Text>{item.user_givenname} {item.user_familyname}</Text>
-                <Caption>{item.email}</Caption>
+              <View style={{flexDirection: 'row'}}>
+                <View sytle={{alignItems: 'flex-start'}}>
+                  <Text>{item.user_givenname} {item.user_familyname}</Text>
+                  <Caption>{item.email}</Caption>
+                </View>
+                <View sytle={{alignItems: 'flex-end'}}>  
+                  <Button
+                      title="View Profile"
+                      onPress={() => this.ViewProfile(item.user_id)}
+                    />
+                </View>
+                
               </View>
+              
+              
+              
             )}
 
             keyExtractor={(item,index) => item.user_id}
             />
           </View>
 
-          <View>
-            <Text> Friend Requests </Text>
+          <View style={FriendStyl.FriendSec}>
+            <Text style={FriendStyl.FriendTitle}> Friend Requests </Text>
             <FlatList
             data = {this.state.Friendrequests}
             renderItem = {({item}) => 
@@ -271,8 +282,8 @@ class Friends extends Component{
             />
           </View>
 
-          <View>
-            <Text> People you may know ....</Text>
+          <View style={FriendStyl.FriendSec}>
+            <Text style={FriendStyl.FriendTitle}> People you may know ....</Text>
             <FlatList
             data = {this.state.SuggestedFriends}
             renderItem = {({item}) => 
@@ -293,9 +304,32 @@ class Friends extends Component{
           </View>
 
         </View>
-      </View>
     );
   }
 }
+
+const FriendStyl = StyleSheet.create(
+  {
+    container:{
+      flex:1,
+    },
+
+    FriendSec:
+    {
+      margin:10,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+
+    FriendTitle:
+    {
+      fontSize:25,
+      fontWeight: 'bold',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+
+  }
+)
 
 export default Friends;

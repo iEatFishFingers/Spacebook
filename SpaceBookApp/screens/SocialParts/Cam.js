@@ -42,7 +42,7 @@ class Cam extends Component{
       })
   }
 
-    takePicture = async () => {
+  takePicture = async () => {
         if(this.camera){
             const options = {
                 quality: 0.5, 

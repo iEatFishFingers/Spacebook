@@ -22,10 +22,44 @@ class EditProfile extends Component{
 
     componentDidMount()
     {
-        
+       this.getInfo(); 
     }
 
-    
+    getInfo = async () => {
+      const auth = await AsyncStorage.getItem('@token');
+      const userid = await AsyncStorage.getItem('@id');
+      return fetch("http://localhost:3333/api/1.0.0/user/"+userid, {
+              method: 'GET',
+              headers: {
+                'X-Authorization':  auth,
+              },
+      })
+      .then( (response) => 
+          {
+              
+              console.log(response);
+              if(response.status === 200){
+                  console.log('info loaded... ');
+                  return response.json();
+              }
+              else if(response.status === 400){
+                  alert("No changes has been made please make sure you have updated something");
+                  throw 'Bad Request';
+              }
+              else{
+                  alert('something went wrong check console');
+                  throw 'Something went wrong';
+              }
+          })
+          .then( (responseJSON) => 
+          {
+              this.state.firstname = responseJSON.first_name;
+              this.state.lastname = responseJSON.last_name;
+              this.state.email = responseJSON.email;
+              console.log(responseJSON);
+              console.log(this.state);
+          })
+    }
 
     UpdateInfo = async () => {
           const auth = await AsyncStorage.getItem('@token');
@@ -52,6 +86,7 @@ class EditProfile extends Component{
               console.log(response);
               if(response.status === 200){
                   alert("Profile has successfully upadated " +  JSON.stringify(updatedinfo));
+                  return response.json();
               }
               else if(response.status === 400){
                   alert("No changes has been made please make sure you have updated something");
@@ -78,8 +113,10 @@ class EditProfile extends Component{
               <TextInput
                     style={mainStyle.Input} 
                     type="text"
-                    onChangeText={text => this.setState({firstnameU: text})}
-                    placeholder="Firstname"
+                    text={this.state.firstname}
+                    placeholder={this.state.firstname}
+                    onChangeText={text => this.setState({firstname: text})}
+                    
                 />
             </View>
 
@@ -87,7 +124,7 @@ class EditProfile extends Component{
               <TextInput
                     style={mainStyle.Input}
                     type="text"
-                    onChangeText={text => this.setState({lastnameU: text})}
+                    onChangeText={text => this.setState({lastname: text})}
                     placeholder="Surname"
               />
             </View>
@@ -96,7 +133,7 @@ class EditProfile extends Component{
               <TextInput
                     style={mainStyle.Input}
                     type="text"
-                    onChangeText={text => this.setState({emailU: text})}
+                    onChangeText={text => this.setState({email: text})}
                     placeholder="Email"
                 />
             </View>
