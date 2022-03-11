@@ -13,6 +13,8 @@ const Stackv2 = createBottomTabNavigator();
 class bottomTab extends Component{
   render(){
     return(
+
+      //customised the tab nav bar
       <Stackv2.Navigator 
       screenOptions={{
         tabBarShowLabel:false,

@@ -25,6 +25,9 @@ class EditProfile extends Component{
        this.getInfo(); 
     }
 
+    //this was intended to get all the user information 
+    //and put the already existing information into the textinputs to
+    //which the user can edit it as they wish
     getInfo = async () => {
       const auth = await AsyncStorage.getItem('@token');
       const userid = await AsyncStorage.getItem('@id');
@@ -61,6 +64,8 @@ class EditProfile extends Component{
           })
     }
 
+    //sends a post requests using the information that the user 
+    //enters in the textinput fields as the body 
     UpdateInfo = async () => {
           const auth = await AsyncStorage.getItem('@token');
           const user_id = await AsyncStorage.getItem('@id');
@@ -100,9 +105,7 @@ class EditProfile extends Component{
           .catch((error) => {
               console.log(error);
           })
-      }
-
-
+    }
 
     render()
     {

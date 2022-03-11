@@ -10,6 +10,8 @@ const Stack = createBottomTabNavigator();
 class Main extends Component{
   render(){
     return(
+      //so then the program is able to navigate to different pages
+      //the stackv2 holds the custom bottom tab
       <NavigationContainer independent={true}>
         <Stackv2/>
       </NavigationContainer>

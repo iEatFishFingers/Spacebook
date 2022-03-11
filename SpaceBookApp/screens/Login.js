@@ -13,12 +13,12 @@ class Login extends Component{
         }
 
     }
-  
+      //bypass the userlogin
       Test = () => {
         console.log('going to homw now ');
         this.props.navigation.navigate('Home')
       }
-
+      //logs the user in
       Login = () => {
         console.log("login button pressed");
         let loginInfo = {

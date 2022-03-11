@@ -17,7 +17,7 @@ class SignUp extends Component{
     }
 
 
-
+//sends info to the server
     post =() => {
         console.log("working");
         let sendLoginInfo = {
@@ -47,6 +47,7 @@ class SignUp extends Component{
             }
             else if(response.status === 400)
             {
+                console.log('Unable to sign up perhaps email already in use');
                 throw 'Unable to sign up perhaps email already in use';
             }
             else

@@ -11,6 +11,7 @@ const Stack = createNativeStackNavigator();
 
 function App() {
   return (
+    //this holds all the possible pages the user is able to go to through the profile
     <NavigationContainer independent='true'>
       <Stack.Navigator initialRouteName="Profile" screenOptions={{
         tabBarShowLabel:false,

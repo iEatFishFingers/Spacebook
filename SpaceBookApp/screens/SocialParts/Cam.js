@@ -1,3 +1,5 @@
+/* eslint-disable react/prop-types */
+
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Camera } from 'expo-camera';
@@ -18,6 +20,8 @@ class Cam extends Component{
     this.setState({hasPermission: status === 'granted'});
   }
 
+  //sends a post request to the server 
+  //to be able to upload the user's profile picture
   sendToServer = async (data) => {
       // Get these from AsyncStorage
       const auth = await AsyncStorage.getItem('@token');
@@ -36,12 +40,15 @@ class Cam extends Component{
       })
       .then((response) => {
           console.log("Picture added", response);
+          this.props.navigation.navigate('Cam');
       })
       .catch((err) => {
           console.log(err);
       })
   }
 
+  //allows the user to take the picture
+  //also checks whether the user is able to take picures 
   takePicture = async () => {
         if(this.camera){
             const options = {

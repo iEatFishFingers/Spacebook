@@ -30,7 +30,8 @@ class HomeScreen extends Component
   }
 
 
-
+//gets all of the current user friends then calls getfriends function
+//to get friend information
   getPosts = async () => {
     const auth = await AsyncStorage.getItem('@token');
     const id = await AsyncStorage.getItem('@id');
@@ -69,6 +70,9 @@ class HomeScreen extends Component
      
   }
 
+  //gets the user's friend information and stores 
+  //after that calls another function to extract only 
+  //the ids
   getFriends = async () => 
   {
     const auth = await AsyncStorage.getItem('@token');
@@ -108,6 +112,10 @@ class HomeScreen extends Component
     })
   }
 
+  //using the variable that we created to store the friend info
+  //we are going to create a loop that will loop around all of the 
+  //user's info extracting only the id onto a seperate array
+  //then call another function to use the API to get the post
   initFriendID =  () => {
     let temp = this.state.friends
     console.log(temp);
@@ -118,52 +126,56 @@ class HomeScreen extends Component
     this.getFriendPost();
   }
 
+  //using the array from the last function we are going to get all the post from each user
+  //by looping through the array of id till all of them have been through
+  //while adding to the post array 
   getFriendPost = async () => {
     const auth = await AsyncStorage.getItem('@token');
     
     for(let i = 0; i<=this.state.fId.length; i++)
     {
-      return fetch("http://localhost:3333/api/1.0.0/user/"+this.state.fId[i]+"/post", 
-    {
-      method: 'GET',
-      headers: {
-        'X-Authorization':  auth,
-      }
-    })
-    .then( (response) => 
+        return fetch("http://localhost:3333/api/1.0.0/user/"+this.state.fId[i]+"/post", 
       {
-        console.log(response);
-        if(response.status === 200){
-          return response.json();
+        method: 'GET',
+        headers: {
+          'X-Authorization':  auth,
         }
-        else if(response.status === 400){
-          alert('Bad request');
-        }
-        else if(response.status === 404){
-          console.log("no friends")
-        }
-        else
+      })
+      .then( (response) => 
         {
-          alert('something went wrong');
-        }
-    })
-    .then( (responseJson) => {
-        console.log(responseJson);
-        let temp = responseJson;
-        for(i = 0; i< temp.length; i++)
-        {
-          this.state.Posts.push(temp[i]);
-        }
-        console.log(this.state.Posts)
-    })
-    .catch((error) => {
-        console.log(error)
-    })
+          console.log(response);
+          if(response.status === 200){
+            return response.json();
+          }
+          else if(response.status === 400){
+            alert('Bad request');
+          }
+          else if(response.status === 404){
+            console.log("no friends")
+          }
+          else
+          {
+            alert('something went wrong');
+          }
+      })
+      .then( (responseJson) => {
+          console.log(responseJson);
+          let temp = responseJson;
+          for(i = 0; i< temp.length; i++)
+          {
+            this.state.Posts.push(temp[i]);
+          }
+          console.log(this.state.Posts)
+      })
+      .catch((error) => {
+          console.log(error)
+      })
     }
     
      
   }
 
+  //uses the info that the user provided as the body and post the information to the server 
   Post = async () => 
   {
     const auth = await AsyncStorage.getItem('@token');
@@ -202,6 +214,10 @@ class HomeScreen extends Component
     })
   }
 
+  //this does not get called straight away
+  //as i wanted this to be simular to facebook if this post is already liked
+  //then this function will be called
+  //and it will send a delete request to the server
   removePost = async (postid) =>
   {
     const auth = await AsyncStorage.getItem('@token');
@@ -238,6 +254,9 @@ class HomeScreen extends Component
 
   }
 
+  //sends a post request to the server using where there are parameters
+  //that get sent through so then the right post and the right
+  //user sends the post
   likePost = async (postid,id) => 
   {
     const auth = await AsyncStorage.getItem('@token');

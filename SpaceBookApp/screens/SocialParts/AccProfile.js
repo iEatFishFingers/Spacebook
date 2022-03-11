@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 import {Text, View, StyleSheet, Pressable, FlatList, Button } from 'react-native';
 import {Avatar, Caption, Divider, Title} from 'react-native-paper';

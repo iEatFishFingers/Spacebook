@@ -164,7 +164,7 @@ class Friends extends Component{
       console.log(error)
   })
   }
-
+ //accepts friend request by sending a post  
   AccReq = async (id) => {
     const auth = await AsyncStorage.getItem('@token');
     return fetch("http://localhost:3333/api/1.0.0/friendrequests/"+id, 
@@ -196,6 +196,7 @@ class Friends extends Component{
     
   }
 
+  //decline friend request by sending a delete 
   DecReq = async (id) => {
     const auth = await AsyncStorage.getItem('@token');
     return fetch("http://localhost:3333/api/1.0.0/friendrequests/"+id, 
